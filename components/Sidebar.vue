@@ -6,6 +6,19 @@ import {
   LucidePickaxe,
   LucideSettings,
 } from "lucide-vue-next";
+import { useRoute } from "vue-router";
+import { computed } from "vue";
+
+const route = useRoute();
+
+const isActive = (path: string) => computed(() => {
+  // if rote is /console
+  if (path === "/console") {
+    return route.path === "/console";
+  }
+
+  return route.path.startsWith(path);
+});
 </script>
 
 <template>
@@ -14,22 +27,38 @@ import {
       <div class="px-3 py-2">
         <div class="space-y-1">
           <NuxtLink to="/console">
-            <Button variant="ghost" class="w-full justify-start">
+            <Button
+              :class="{ 'bg-gray-200': isActive('/console').value }"
+              variant="ghost"
+              class="w-full justify-start"
+            >
               <LucideHome class="mr-2 h-4 w-4" />
               Dashboard
             </Button>
           </NuxtLink>
           <NuxtLink to="/console/crawlers">
-            <Button variant="ghost" class="w-full justify-start">
+            <Button
+              :class="{ 'bg-gray-200': isActive('/console/crawlers').value }"
+              variant="ghost"
+              class="w-full justify-start"
+            >
               <LucidePickaxe class="mr-2 h-4 w-4" />
               Crawlers
             </Button>
           </NuxtLink>
-          <Button variant="ghost" class="w-full justify-start">
+          <Button
+            :class="{ 'bg-gray-200': isActive('/console/proxy').value }"
+            variant="ghost"
+            class="w-full justify-start"
+          >
             <LucideGhost class="mr-2 h-4 w-4" />
             Proxy
           </Button>
-          <Button variant="ghost" class="w-full justify-start">
+          <Button
+            :class="{ 'bg-gray-200': isActive('/console/settings').value }"
+            variant="ghost"
+            class="w-full justify-start"
+          >
             <LucideSettings class="mr-2 h-4 w-4" />
             Settings
           </Button>

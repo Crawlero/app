@@ -15,7 +15,6 @@ import {
   getSortedRowModel,
   useVueTable,
 } from "@tanstack/vue-table";
-import { ArrowUpDown, ChevronDown } from "lucide-vue-next";
 
 import { h, ref } from "vue";
 import { Button } from "@/components/ui/button";
@@ -28,82 +27,77 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn, valueUpdater } from "@/lib/utils";
+import { Badge } from "~/components/ui/badge";
 
-export interface Payment {
+export interface Crawler {
   id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
+  name: string;
+  lastRun: string;
+  runCount: number;
+  lastStatus: "pending" | "processing" | "success" | "failed";
 }
 
-const data: Payment[] = [
+const data: Crawler[] = [
   {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@yahoo.com",
+    id: "c1",
+    name: "Crawler One",
+    lastRun: "2023-10-01",
+    runCount: 10,
+    lastStatus: "success",
   },
   {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@gmail.com",
+    id: "c2",
+    name: "Crawler Two",
+    lastRun: "2023-10-02",
+    runCount: 5,
+    lastStatus: "failed",
   },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@gmail.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@gmail.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@hotmail.com",
-  },
+  // Add more crawlers as needed
 ];
 
-const columnHelper = createColumnHelper<Payment>();
+const router = useRouter();
+
+const columnHelper = createColumnHelper<Crawler>();
 
 const columns = [
-  columnHelper.accessor("status", {
-    enablePinning: true,
-    header: "Status",
+  columnHelper.accessor("name", {
+    header: "Name",
     cell: ({ row }) =>
-      h("div", { class: "capitalize" }, row.getValue("status")),
-  }),
-  columnHelper.accessor("email", {
-    header: ({ column }) => {
-      return h(
-        Button,
+      h(
+        "div",
         {
-          variant: "ghost",
-          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+          onClick: () => router.push(`/console/crawlers/${row.original.id}`),
+          class: "cursor-pointer font-semibold",
         },
-        () => ["Email", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })],
-      );
-    },
-    cell: ({ row }) => h("div", { class: "lowercase" }, row.getValue("email")),
+        row.getValue("name"),
+      ),
   }),
-  columnHelper.accessor("amount", {
-    header: () => h("div", { class: "text-right" }, "Amount"),
-    cell: ({ row }) => {
-      const amount = Number.parseFloat(row.getValue("amount"));
-
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-
-      return h("div", { class: "text-right font-medium" }, formatted);
-    },
+  columnHelper.accessor("lastRun", {
+    header: "Last Run",
+    cell: ({ row }) => h("div", row.getValue("lastRun")),
+  }),
+  columnHelper.accessor("runCount", {
+    header: "Run Count",
+    cell: ({ row }) => h("div", row.getValue("runCount")),
+  }),
+  columnHelper.accessor("lastStatus", {
+    header: "Last Status",
+    cell: ({ row }) =>
+      h(
+        Badge,
+        { variant: row.getValue("lastStatus") },
+        row.getValue("lastStatus"),
+      ),
+  }),
+  columnHelper.display({
+    id: "actions",
+    header: "Action",
+    cell: ({ row }) =>
+      h(
+        Button,
+        { onClick: () => alert(`Action for ${row.original.name}`) },
+        "Action",
+      ),
   }),
 ];
 
@@ -146,7 +140,7 @@ const table = useVueTable({
       return expanded.value;
     },
     columnPinning: {
-      left: ["status"],
+      left: ["name"],
     },
   },
 });
@@ -161,9 +155,9 @@ definePageMeta({
     <div class="flex gap-2 items-center py-4">
       <Input
         class="max-w-sm"
-        placeholder="Filter emails..."
-        :model-value="table.getColumn('email')?.getFilterValue() as string"
-        @update:model-value="table.getColumn('email')?.setFilterValue($event)"
+        placeholder="Filter names..."
+        :model-value="table.getColumn('name')?.getFilterValue() as string"
+        @update:model-value="table.getColumn('name')?.setFilterValue($event)"
       />
     </div>
 
