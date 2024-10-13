@@ -4,6 +4,4 @@ definePageMeta({
 });
 </script>
 
-<template>
-  Okok
-</template>
+<template>Okok</template>

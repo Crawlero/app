@@ -37,24 +37,6 @@ export interface Crawler {
   lastStatus: "pending" | "processing" | "success" | "failed";
 }
 
-const data: Crawler[] = [
-  {
-    id: "c1",
-    name: "Crawler One",
-    lastRun: "2023-10-01",
-    runCount: 10,
-    lastStatus: "success",
-  },
-  {
-    id: "c2",
-    name: "Crawler Two",
-    lastRun: "2023-10-02",
-    runCount: 5,
-    lastStatus: "failed",
-  },
-  // Add more crawlers as needed
-];
-
 const router = useRouter();
 
 const columnHelper = createColumnHelper<Crawler>();
@@ -107,8 +89,14 @@ const columnVisibility = ref<VisibilityState>({});
 const rowSelection = ref({});
 const expanded = ref<ExpandedState>({});
 
+const { data } = useFetch<{ crawlers: Crawler[] }>(
+  "/api/crawler",
+);
+
+const crawlers = computed(() => data.value?.crawlers ?? []);
+
 const table = useVueTable({
-  data,
+  data: crawlers,
   columns,
   getCoreRowModel: getCoreRowModel(),
   getPaginationRowModel: getPaginationRowModel(),

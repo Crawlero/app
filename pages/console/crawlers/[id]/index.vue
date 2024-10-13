@@ -1,6 +1,6 @@
 <template>
   <div class="bg-gray-100 p-4 rounded-lg shadow-md">
-    <form @submit.prevent="updateSchema">
+    <form @submit.prevent="updateConfig">
       <div class="mb-4">
         <Label for="url" class="font-bold mb-2">URL:</Label>
         <Input type="url" v-model="config.url" id="url" />
@@ -8,12 +8,12 @@
 
       <div class="mb-4">
         <Label for="name" class="font-bold mb-2">Name:</Label>
-        <Input type="text" v-model="schema.name" id="name" />
+        <Input type="text" v-model="config.schema.name" id="name" />
       </div>
 
       <div class="mb-4">
         <Label for="baseSelector" class="font-bold mb-2">Base Selector:</Label>
-        <Input type="text" v-model="schema.baseSelector" id="baseSelector" />
+        <Input type="text" v-model="config.schema.baseSelector" id="baseSelector" />
       </div>
 
       <div class="mb-4">
@@ -24,10 +24,10 @@
             @click="addField"
           />
         </div>
-        <div v-for="(_, index) in schema.fields" :key="index">
+        <div v-for="(_, index) in config.schema.fields" :key="index">
           <Field
             :key="index"
-            v-model="schema.fields[index]"
+            v-model="config.schema.fields[index]"
             :onRemoveClick="(_) => removeField(index)"
           />
         </div>
@@ -42,72 +42,27 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { FieldTypes, type Scheme } from "~/lib/scheme";
+import { FieldTypes } from "~/lib/scheme";
 import { LucidePlusCircle } from "lucide-vue-next";
+import { type CrawlerResponse } from "~/server/api/crawler/[id]/index.get";
 
-const schema = ref<Scheme>({
-  name: "News Teaser Extractor",
-  baseSelector: ".wide-tease-item__wrapper",
-  fields: [
-    {
-      name: "category",
-      selector: ".unibrow span[data-testid='unibrow-text']",
-      type: FieldTypes.Text,
-      fields: [],
-    },
-    {
-      name: "headline",
-      selector: ".wide-tease-item__headline",
-      type: FieldTypes.Text,
-      fields: [],
-    },
-    {
-      name: "summary",
-      selector: ".wide-tease-item__description",
-      type: FieldTypes.Text,
-      fields: [],
-    },
-    {
-      name: "time",
-      selector: "[data-testid='wide-tease-date']",
-      type: FieldTypes.Text,
-      fields: [],
-    },
-    {
-      name: "image",
-      type: FieldTypes.Nested,
-      selector: "picture.teasePicture img",
-      fields: [
-        {
-          name: "src",
-          type: FieldTypes.Attribute,
-          attribute: "src",
-          fields: [],
-        },
-        {
-          name: "alt",
-          type: FieldTypes.Attribute,
-          attribute: "alt",
-          fields: [],
-        },
-      ],
-    },
-    {
-      name: "link",
-      selector: "a[href]",
-      type: FieldTypes.Attribute,
-      attribute: "href",
-      fields: [],
-    },
-  ],
-});
+const route = useRoute();
 
-const config = ref({
+const defaultConfig = {
   url: "",
-});
+  schema: {
+    name: "",
+    baseSelector: "",
+    fields: [],
+  },
+};
+
+const { data } = useFetch<CrawlerResponse>(`/api/crawler/${route.params.id}`);
+
+const config = ref(data.value?.crawler ?? defaultConfig);
 
 const addField = () => {
-  schema.value.fields.push({
+  config.value?.schema.fields.push({
     name: "",
     selector: "",
     type: FieldTypes.Text,
@@ -116,10 +71,10 @@ const addField = () => {
 };
 
 const removeField = (index: number) => {
-  schema.value.fields.splice(index, 1);
+  config.value?.schema.fields.splice(index, 1);
 };
 
-const updateSchema = () => {
-  console.log("Schema updated:", schema.value);
+const updateConfig = () => {
+  console.log("Schema updated:", config.value?.schema);
 };
 </script>
