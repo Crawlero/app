@@ -2,6 +2,11 @@
   <div class="bg-gray-100 p-4 rounded-lg shadow-md">
     <form @submit.prevent="updateSchema">
       <div class="mb-4">
+        <Label for="url" class="font-bold mb-2">URL:</Label>
+        <Input type="url" v-model="config.url" id="url" />
+      </div>
+
+      <div class="mb-4">
         <Label for="name" class="font-bold mb-2">Name:</Label>
         <Input type="text" v-model="schema.name" id="name" />
       </div>
@@ -95,6 +100,10 @@ const schema = ref<Scheme>({
       fields: [],
     },
   ],
+});
+
+const config = ref({
+  url: "",
 });
 
 const addField = () => {
