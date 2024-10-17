@@ -4,9 +4,9 @@ export default defineEventHandler(async (event) => {
 
   const newCrawler = await db
     .prepare(
-      "INSERT INTO Crawler (name, description, userId) VALUES (?1, ?2, ?3)",
+      "INSERT INTO Crawler (name, description, userId, url, schema) VALUES (?1, ?2, ?3, ?4, ?5)",
     )
-    .bind(body.name, body.description, 1)
+    .bind(body.name, body.description, 1, "", "")
     .run();
 
   if (newCrawler.error) {
