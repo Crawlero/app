@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
 
   const result = await db
     .prepare(
-      'UPDATE Crawler SET name = "?1", description = "?2", url = "?3", schema = "?4" WHERE id = ?5',
+      "UPDATE Crawler SET name = ?1, description = ?2, url = ?3, schema = ?4 WHERE id = ?5",
     )
     .bind(
       body.name || currentCrawler.name,
