@@ -4,6 +4,7 @@ export default defineNuxtConfig({
     "shadcn-nuxt",
     "@prisma/nuxt",
     "nuxt-auth-utils",
+    "@nuxthub/core",
   ],
 
   shadcn: {
@@ -29,6 +30,9 @@ export default defineNuxtConfig({
           "./node_modules/.prisma/client/index-browser.js",
       },
     },
+  },
+  hub: {
+    database: true,
   },
 });
 
