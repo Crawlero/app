@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive } from "vue";
 
-import { AlertCircle, Building2, Phone, Mail, Clock } from "lucide-vue-next";
+import { Building2, Phone, Mail, Clock } from "lucide-vue-next";
 
 interface ContactFormeProps {
   firstName: string;
@@ -164,17 +164,6 @@ const handleSubmit = () => {
                 v-model="contactForm.message"
               />
             </div>
-
-            <Alert
-              v-if="invalidInputForm"
-              variant="destructive"
-            >
-              <AlertCircle class="w-4 h-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>
-                There is an error in the form. Please check your input.
-              </AlertDescription>
-            </Alert>
 
             <Button class="mt-4">Send message</Button>
           </form>
