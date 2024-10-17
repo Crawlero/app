@@ -111,10 +111,6 @@ async function refreshData() {
   await refresh();
   table.reset();
 }
-
-definePageMeta({
-  layout: "console",
-});
 </script>
 
 <template>

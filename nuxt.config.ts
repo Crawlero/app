@@ -1,5 +1,10 @@
 export default defineNuxtConfig({
-  modules: ["@nuxtjs/tailwindcss", "shadcn-nuxt", "@prisma/nuxt"],
+  modules: [
+    "@nuxtjs/tailwindcss",
+    "shadcn-nuxt",
+    "@prisma/nuxt",
+    "nuxt-auth-utils",
+  ],
 
   shadcn: {
     /**

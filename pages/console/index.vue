@@ -1,9 +1,9 @@
 <script setup lang="ts">
-definePageMeta({
-  layout: "console",
-});
+const { loggedIn, user } = useUserSession();
 </script>
 
 <template>
-Dashboard
+  <div v-if="loggedIn">
+    <h1>Welcome {{ user?.name }}</h1>
+  </div>
 </template>

@@ -73,11 +73,6 @@ const saveName = async () => {
   await updateCrawler({ name: editableName.value });
   isEditingName.value = false;
 };
-
-definePageMeta({
-  layout: "console",
-  name: "Crawler",
-});
 </script>
 
 <template>

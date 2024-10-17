@@ -1,12 +1,9 @@
 <script setup lang="ts">
-definePageMeta({
-  layout: "console",
-});
 </script>
 
 <template>
   <div>
-    <h1>Dashboard</h1>
+    <h1>Landing</h1>
     <p>Welcome</p>
   </div>
 </template>

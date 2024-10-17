@@ -2,7 +2,6 @@
   <NuxtLoadingIndicator />
   <div class="hidden md:block">
     <Toaster />
-    <Navbar />
 
     <div class="border-t">
       <div class="bg-background">
