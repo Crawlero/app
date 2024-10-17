@@ -68,7 +68,6 @@ import { parseCrawlerSchema } from "~/lib/crawler";
 import { FieldTypes, type CrawlerSchema } from "~/lib/types/crawler";
 import { useToast } from "@/components/ui/toast/use-toast";
 import { Loader2 } from "lucide-vue-next";
-import type { Crawler } from "@prisma/client";
 
 type FormDataType = {
   url: string;
@@ -80,7 +79,7 @@ const { toast } = useToast();
 
 const updating = ref(false);
 
-const { data: crawler } = await useFetch<Crawler>(
+const { data: crawler } = await useFetch<any>(
   "/api/crawler/" + route.params.id,
   {
     key: `crawler-${route.params.id}`,

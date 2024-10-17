@@ -1,5 +1,3 @@
-import prisma from "~/lib/prisma";
-
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, "id");
 
@@ -10,7 +8,16 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  return prisma.crawler.findUnique({
-    where: { id: Number(id) },
-  });
+  const db = hubDatabase()
+
+  const result = await db.prepare("SELECT * FROM crawler WHERE id = ?").bind(Number(id)).first();
+
+  if (!result) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Crawler not found",
+    });
+  }
+
+  return result;
 });

@@ -26,10 +26,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn, valueUpdater } from "@/lib/utils";
-import { type Crawler } from "@prisma/client";
 import Button from "~/components/ui/button/Button.vue";
 
-const columnHelper = createColumnHelper<Crawler>();
+const columnHelper = createColumnHelper<any>();
 
 const columns = [
   columnHelper.accessor("name", {

@@ -1,11 +1,7 @@
-import prisma from "~/lib/prisma";
-
 export default defineEventHandler(async (event) => {
-  return prisma.crawler.findMany({
-    select: {
-      name: true,
-      url: true,
-      id: true,
-    },
-  });
+  const db = hubDatabase();
+
+  const result = await db.prepare("SELECT name, url, id FROM crawler").all();
+
+  return result.results;
 });

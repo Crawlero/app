@@ -2,7 +2,6 @@ export default defineNuxtConfig({
   modules: [
     "@nuxtjs/tailwindcss",
     "shadcn-nuxt",
-    "@prisma/nuxt",
     "nuxt-auth-utils",
     "@nuxthub/core",
   ],
@@ -19,20 +18,10 @@ export default defineNuxtConfig({
     componentDir: "./components/ui",
   },
 
-  compatibilityDate: "2024-10-13",
-  vite: {
-    ssr: {
-      external: ["@prisma/client"],
-    },
-    resolve: {
-      alias: {
-        ".prisma/client/index-browser":
-          "./node_modules/.prisma/client/index-browser.js",
-      },
-    },
-  },
   hub: {
     database: true,
   },
+
+  compatibilityDate: "2024-10-13"
 });
 

@@ -1,5 +1,3 @@
-import prisma from "~/lib/prisma";
-
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, "id");
   const body = await readBody(event);
@@ -11,10 +9,5 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const restult = await prisma.crawler.update({
-    where: { id: Number(id) },
-    data: body,
-  });
-
-  return restult;
+  return {};
 });

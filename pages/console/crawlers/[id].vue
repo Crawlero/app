@@ -4,7 +4,6 @@ import { ref, h } from "vue";
 import { useRoute } from "vue-router";
 import { cn } from "@/lib/utils";
 import { useToast } from "~/components/ui/toast";
-import type { Crawler } from "@prisma/client";
 
 const route = useRoute();
 
@@ -35,7 +34,7 @@ const baseRoute = `/console/crawlers/${route.params.id}`;
 
 const { toast } = useToast();
 
-const { data: crawler } = await useFetch<Crawler>(
+const { data: crawler } = await useFetch<any>(
   "/api/crawler/" + route.params.id,
   {
     key: `crawler-${route.params.id}`,

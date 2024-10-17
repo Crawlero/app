@@ -1,21 +1,10 @@
-import prisma from "~/lib/prisma";
-
 export default defineOAuthGoogleEventHandler({
   async onSuccess(event, { user }) {
-    const persistedUser = await prisma.user.upsert({
-      where: { email: user.email },
-      update: {},
-      create: {
-        email: user.email,
-        name: user.name,
-      },
-    });
-
     await setUserSession(event, {
       user: {
-        id: persistedUser.id,
-        email: persistedUser.email,
-        name: persistedUser.name || "No name",
+        id: user.id,
+        email: user.email,
+        name: user.name || "No name",
       },
     });
 
