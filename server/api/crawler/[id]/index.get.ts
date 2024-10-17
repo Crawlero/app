@@ -8,9 +8,12 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const db = hubDatabase()
+  const db = hubDatabase();
 
-  const result = await db.prepare("SELECT * FROM crawler WHERE id = ?").bind(Number(id)).first();
+  const result = await db
+    .prepare("SELECT * FROM crawler WHERE id = ?1")
+    .bind(Number(id))
+    .first();
 
   if (!result) {
     throw createError({
