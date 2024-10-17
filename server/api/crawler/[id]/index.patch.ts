@@ -2,6 +2,7 @@ import prisma from "~/lib/prisma";
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, "id");
+  const body = await readBody(event);
 
   if (!id || isNaN(Number(id))) {
     throw createError({
@@ -10,7 +11,10 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  return prisma.crawler.findUnique({
+  const restult = await prisma.crawler.update({
     where: { id: Number(id) },
+    data: body,
   });
+
+  return restult;
 });

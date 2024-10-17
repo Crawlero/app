@@ -17,7 +17,6 @@ import {
 } from "@tanstack/vue-table";
 
 import { h, ref } from "vue";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -27,17 +26,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn, valueUpdater } from "@/lib/utils";
-import { Badge } from "~/components/ui/badge";
-
-export interface Crawler {
-  id: string;
-  name: string;
-  lastRun: string;
-  runCount: number;
-  lastStatus: "pending" | "processing" | "success" | "failed";
-}
-
-const router = useRouter();
+import { type Crawler } from "@prisma/client";
+import Button from "~/components/ui/button/Button.vue";
 
 const columnHelper = createColumnHelper<Crawler>();
 
@@ -46,30 +36,16 @@ const columns = [
     header: "Name",
     cell: ({ row }) =>
       h(
-        "div",
+        "a",
         {
-          onClick: () => router.push(`/console/crawlers/${row.original.id}`),
+          href: `/console/crawlers/${row.original.id}`,
           class: "cursor-pointer font-semibold",
         },
         row.getValue("name"),
       ),
   }),
-  columnHelper.accessor("lastRun", {
-    header: "Last Run",
-    cell: ({ row }) => h("div", row.getValue("lastRun")),
-  }),
-  columnHelper.accessor("runCount", {
-    header: "Run Count",
-    cell: ({ row }) => h("div", row.getValue("runCount")),
-  }),
-  columnHelper.accessor("lastStatus", {
-    header: "Last Status",
-    cell: ({ row }) =>
-      h(
-        Badge,
-        { variant: row.getValue("lastStatus") },
-        row.getValue("lastStatus"),
-      ),
+  columnHelper.accessor("url", {
+    header: "Url",
   }),
   columnHelper.display({
     id: "actions",
@@ -89,14 +65,12 @@ const columnVisibility = ref<VisibilityState>({});
 const rowSelection = ref({});
 const expanded = ref<ExpandedState>({});
 
-const { data } = useFetch<{ crawlers: Crawler[] }>(
-  "/api/crawler",
-);
-
-const crawlers = computed(() => data.value?.crawlers ?? []);
+const { data: crawlers, refresh } = await useFetch<Crawler[]>("/api/crawler");
 
 const table = useVueTable({
-  data: crawlers,
+  get data() {
+    return crawlers.value || [];
+  },
   columns,
   getCoreRowModel: getCoreRowModel(),
   getPaginationRowModel: getPaginationRowModel(),
@@ -133,6 +107,11 @@ const table = useVueTable({
   },
 });
 
+async function refreshData() {
+  await refresh();
+  table.reset();
+}
+
 definePageMeta({
   layout: "console",
 });
@@ -140,13 +119,16 @@ definePageMeta({
 
 <template>
   <div class="w-full">
-    <div class="flex gap-2 items-center py-4">
-      <Input
-        class="max-w-sm"
-        placeholder="Filter names..."
-        :model-value="table.getColumn('name')?.getFilterValue() as string"
-        @update:model-value="table.getColumn('name')?.setFilterValue($event)"
-      />
+    <div class="flex gap-2 items-center py-4 justify-between">
+      <CreateCrawlerDialog :onCreated="refreshData" />
+      <div>
+        <Input
+          class="max-w-sm"
+          placeholder="Filter names..."
+          :model-value="table.getColumn('name')?.getFilterValue() as string"
+          @update:model-value="table.getColumn('name')?.setFilterValue($event)"
+        />
+      </div>
     </div>
 
     <div class="rounded-md border">

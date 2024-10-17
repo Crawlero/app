@@ -1,52 +1,15 @@
 <script setup lang="ts">
 import { LucideCalendar, LucidePanelTop, LucidePickaxe } from "lucide-vue-next";
-import { ref, onMounted } from "vue";
+import { ref, h } from "vue";
 import { useRoute } from "vue-router";
 import { cn } from "@/lib/utils";
-
-interface Crawler {
-  id: string;
-  name: string;
-  description: string;
-  lastRun: string;
-  runCount: number;
-  lastStatus: "pending" | "processing" | "success" | "failed";
-}
+import { useToast } from "~/components/ui/toast";
+import type { Crawler } from "@prisma/client";
 
 const route = useRoute();
-const originalCrawler = ref<Crawler>({
-  id: "",
-  name: "",
-  description: "",
-  lastRun: "",
-  runCount: 0,
-  lastStatus: "pending",
-});
-const crawler = ref<Crawler>({
-  id: "",
-  name: "",
-  description: "",
-  lastRun: "",
-  runCount: 0,
-  lastStatus: "pending",
-});
 
 const isEditingName = ref(false);
 const isEditingDescription = ref(false);
-
-onMounted(() => {
-  const crawlerId = route.params.id;
-  const fetchedCrawler = {
-    id: crawlerId as string,
-    name: "Sample Crawler",
-    description: "Sample description of the crawler.",
-    lastRun: "2023-10-01",
-    runCount: 10,
-    lastStatus: "success" as Crawler["lastStatus"],
-  };
-  originalCrawler.value = { ...fetchedCrawler };
-  crawler.value = fetchedCrawler;
-});
 
 const navs: {
   title: string;
@@ -70,8 +33,50 @@ const navs: {
 
 const baseRoute = `/console/crawlers/${route.params.id}`;
 
+const { toast } = useToast();
+
+const { data: crawler } = await useFetch<Crawler>(
+  "/api/crawler/" + route.params.id,
+  {
+    key: `crawler-${route.params.id}`,
+  },
+);
+
+const editableName = ref(crawler.value?.name);
+const editableDescription = ref(crawler.value?.description || "Edit description");
+
+async function updateCrawler(data: Partial<Crawler>) {
+  try {
+    await $fetch(`/api/crawler/${route.params.id}`, {
+      method: "PATCH",
+      body: data,
+    });
+
+    toast({
+      title: "Success",
+      description: "Crawler updated",
+    });
+  } catch (error) {
+    toast({
+      title: "Error",
+      description: "Failed to update crawler",
+    });
+  }
+}
+
+const saveDescription = async () => {
+  await updateCrawler({ description: editableDescription.value });
+  isEditingDescription.value = false;
+};
+
+const saveName = async () => {
+  await updateCrawler({ name: editableName.value });
+  isEditingName.value = false;
+};
+
 definePageMeta({
   layout: "console",
+  name: "Crawler",
 });
 </script>
 
@@ -79,40 +84,36 @@ definePageMeta({
   <header class="flex items-center justify-between">
     <div class="flex items-center space-x-2">
       <LucidePickaxe class="mr-2 h-4 w-4" />
-      <div v-if="isEditingName">
-        <input
-          type="text"
-          v-model="crawler.name"
-          @blur="isEditingName = false"
-          class="border-b border-gray-300 focus:outline-none focus:border-indigo-500"
-        />
-      </div>
       <h2
-        v-else
+        v-if="!isEditingName"
         @click="isEditingName = true"
         class="text-lg font-semibold tracking-tight cursor-pointer"
       >
-        {{ crawler.name }}
+        {{ editableName }}
       </h2>
+      <Input
+        v-else
+        v-model="editableName"
+        @blur="saveName"
+        @keyup.enter="saveName"
+      />
     </div>
   </header>
 
   <div class="mt-4">
-    <div v-if="isEditingDescription">
-      <textarea
-        v-model="crawler.description"
-        @blur="isEditingDescription = false"
-        @focusout="isEditingDescription = false"
-        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-      ></textarea>
-    </div>
     <p
-      v-else
+      v-if="!isEditingDescription"
       @click="isEditingDescription = true"
       class="mt-2 text-sm text-gray-500 cursor-pointer"
     >
-      {{ crawler.description }}
+      {{ editableDescription }}
     </p>
+    <Textarea
+      v-else
+      v-model="editableDescription"
+      @blur="saveDescription"
+      @keyup.enter="saveDescription"
+    />
   </div>
 
   <main class="mt-8">

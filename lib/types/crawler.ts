@@ -12,7 +12,7 @@ export type Field = {
   attribute?: string;
 }
 
-export type Scheme = {
+export type CrawlerSchema = {
   name: string;
   baseSelector: string;
   fields: Field[];

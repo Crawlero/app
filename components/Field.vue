@@ -54,7 +54,7 @@
 
 <script setup lang="ts">
 import { LucidePlusCircle, LucideTrash } from "lucide-vue-next";
-import { FieldTypes } from "~/lib/scheme";
+import { FieldTypes } from "~/lib/types/crawler";
 
 type Field = {
   name: string;
