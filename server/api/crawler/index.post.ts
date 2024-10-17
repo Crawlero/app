@@ -6,7 +6,13 @@ export default defineEventHandler(async (event) => {
     .prepare(
       "INSERT INTO Crawler (name, description, userId, url, schema) VALUES (?1, ?2, ?3, ?4, ?5)",
     )
-    .bind(body.name, body.description, 1, "", "")
+    .bind(
+      body.name ?? "N/A",
+      body.description ?? "Insert description here",
+      1,
+      "",
+      "",
+    )
     .run();
 
   if (newCrawler.error) {
